@@ -4,6 +4,7 @@ import MaybeObject as ml
 import sys
 import pandas as pd
 import mysql.connector
+import re
 
 # Gets the object that is selected by the user in a dropdown menu.
 option = sys.argv[1]
@@ -34,6 +35,7 @@ if(option == "one"):
         cursor.execute("SELECT * FROM songs_data where artist = %s;", (artist,))
 
     # The object to look for
+    objectArray = []
     if object == "gender":
         objectArray = ['girl','boy','man','dude','girl','women','male','female','lady']
     elif object == "direction":
@@ -45,7 +47,7 @@ if(option == "one"):
     elif object == "day":
         objectArray = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
     elif object == "month":
-        objectArray = ['January','February','March','April','May','June','July','August','September','October','Novemeber','Decemeber']
+        objectArray = ['january','february','march','april','May','june','july','august','september','october','novemeber','decemeber']
     elif object == "drinks":
         objectArray = ['water','tea','coffee','milk','soda','pop','juice','milkshake','beer','wine','vodka']
     elif object == "cars":
@@ -58,6 +60,9 @@ if(option == "one"):
     for i, data in enumerate(cursor):
         results.append(data)
 
+    # Trouble words are words that easily have double meaning such as May. It could mean a month or as something that is unsure.
+    trouble_words = ["may"]
+
     # Converts the array into a dataframe with the right column headers.
     df_pulled = pd.DataFrame(results)
     df_pulled.columns = ["id","title","album","year","genre","artist","lyrics"]
@@ -66,41 +71,48 @@ if(option == "one"):
     word_count = {}
     lyric_count = {}
 
+    # Makes all the elements in the object list lower case
+    for i in range(len(objectArray)):
+        objectArray[i] = objectArray[i].lower()
+ 
+
     # Loop through the dataframe to find different information
     counter = 0
     for index, row in df_pulled.iterrows():
-        line = row["lyrics"]
+        line = row["lyrics"].lower()
+
      
         for lyric_line in line.split("\n"):
-
-            # Prints the current line
-            if ["May","may"] in lyric_line.split():
-
-                if lyric_line not in lyric_count:
-                    lyric_count[lyric_line] = 1
-                else:
-                    lyric_count[lyric_line] += 1
-
-                ml.main(lyric_line, "May")
-               
             for word in lyric_line.split():
-                cleanWord = word.replace(",","")
 
-                #if "may" in lyric_line:
-                    # Calls a ML function to check if the word is the true object or not.
-                    
+                cleanWord = word
 
-              
+                # Clean word properly
+                cleanWord = re.sub(r'\d+', '', cleanWord)
+                cleanWord = re.sub(r'\W+', '', cleanWord)
+                cleanWord = cleanWord.lower().strip()
+
+          
+
+                # If the current word is a trouble word (a word that has multiple meaning)
+                # Causing probelms here with how long it takes
+                if cleanWord in trouble_words:
+                    clean_lyric = ml.clean_data(lyric_line)     
+                    total = ml.run_model(clean_lyric)           # 1 -> True   0 -> False
+                
+                else:
+                    total = 1
+            
                 # Checks for the counts
                 if cleanWord in objectArray:
                     if cleanWord not in word_count:
-                        word_count[cleanWord] = 1
+                        word_count[cleanWord] = total
                     else:
-                        word_count[cleanWord] += 1
+                        word_count[cleanWord] += total
             
     # Adds the dictionary to a SQL database
     for key_col, value_col in word_count.items():
-        cursor.execute("INSERT INTO songs_return (key_col, value_col, artist) VALUES (%s, %s, %s)", (key_col, value_col, ''.join(artist)))
+        cursor.execute("INSERT INTO songs_return (key_col, value_col, artist) VALUES (%s, %s, %s)", (str(key_col), int(value_col), ''.join(artist)))
 
     connection.commit()
 

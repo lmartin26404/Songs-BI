@@ -2,9 +2,9 @@
 
 // Gets the data from the Dashboard and...
 
-require_once "AnalysisData.php";
-require_once "DatabaseConnection.php";
-require_once "ServerFunctions.php";
+require_once "AnalysisData.php";            // Calls the python script that then calls PythonDashBoard
+require_once "DatabaseConnection.php";      // database connects
+require_once "ServerFunctions.php";         // Downloads/parsing the data
 
 
 function Data()

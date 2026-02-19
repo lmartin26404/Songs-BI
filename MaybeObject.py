@@ -7,14 +7,6 @@ import pandas as pd
 import subprocess
 import sys
 
-# Install scikit-learn
-
-# Worst way to solve this problem. Fix this sometime
-#subprocess.check_call([sys.executable, "-m", "pip", "install", "scikit-learn"])
-#subprocess.check_call([sys.executable, "-m", "pip", "install", "nltk"])
-##subprocess.check_call([sys.executable, "-m", "pip", "install", "joblib"])
-#subprocess.check_call([sys.executable, "-m", "pip", "install", "numpy"])
-
 import sklearn
 
 from sklearn.model_selection import train_test_split
@@ -177,15 +169,14 @@ def train_model():
     joblib.dump(count_vectorizer, "vectorizer.joblib")
 
 
-def run_model():
+def run_model(word):
 
     # Loads the model and the vectorizer
     model = joblib.load("random_forest.joblib")
     vectorizer = joblib.load("vectorizer.joblib")
 
     # Cleans the data input
-    text = "The children are running towards a better place"
-    example = clean_data(text)
+    example = clean_data(word)
     example = [example]
 
     # Converts the word into vectorizer
@@ -193,8 +184,11 @@ def run_model():
 
     # Runs the model on the trained data and outputs the result
     prediction = model.predict(example_vec)
-    print("Prediction: ", prediction)
+    
+    # Extracts the score out of the model. A 0 is false and a 1 is true
+    clean_prediction = prediction[0]
 
+    return clean_prediction
     
 def main():
     # Gets the data from the database and cleans it
