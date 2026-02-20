@@ -322,15 +322,43 @@
 
         xhttp.send("graph=" + encodeURIComponent(graphType) + "&band=" + encodeURIComponent(bandOne) + "&object=" + encodeURIComponent(object) + "&bandTwo=" + encodeURIComponent(bandTwo));
 
+
+    
         CreateData();
     }
 
     // Adds the data to the graph from a div.
-    function CreateData() {
+    function CreateData() 
+    {
+        function CallLoadingGraphs()
+        {
+            // Create the child
+            const newLoading = document.createElement("div");
+            newLoading.id = "LoadingBar";
+            
+            newLoading.textContent = "LOADING GRAPHS...";
+
+            var graphLoading = document.getElementById("graphs");
+
+            graphLoading.appendChild(newLoading);
+        }
+
+        function CallDeleteLoadingGraphs()
+        {
+            // Kill the child
+            var newLoading = document.getElementById("LoadingBar");
+
+            newLoading.remove();
+        }
+
+        CallLoadingGraphs()
+
         fetch('DashboardServer.php')
             .then(res => res.json())
             .then(data => {
                 var toString = document.getElementById("TEST").innerHTML;
+
+          
       
                 // Bar chart - horizontal or vertical.
                 if (graphType == "hbar" || graphType == "bar") {
@@ -390,12 +418,6 @@
 
                     }
                   
-           
-
-
-            
-             
-
 
                 } else if (graphType == 'group' || graphType == 'stack' || graphType == 'hStack' || graphType == 'hGroup') {
                     // Work to seperate the x,y,z data
@@ -566,6 +588,8 @@
 
                     outputDiv.innerHTML = tableOutput;   
                 }
+
+                 CallDeleteLoadingGraphs();
             })
             .catch(err => console.error(err));
     }
