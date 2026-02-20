@@ -24,6 +24,7 @@
 <head>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src='https://cdn.plot.ly/plotly-3.1.0.min.js'></script>
+    <link rel="shortcut icon" href="#">
 
 
     <title>Dashboard</title>
@@ -89,6 +90,9 @@
 
                         <div>Change color</div>
                         <div><input type="color" value="#3A72AB" id="changeColor" oninput="UpdateGraph()"></div>
+                    
+
+                        <div><button id="delGraph" onclick="DeleteDashboard()" class="bg-red-600 p-[2%]">Clear Dashboard</button></div>
                     </div>
                 </div>
             </div>
@@ -98,7 +102,7 @@
         <div class="bg-slate-500 col-span-6">
             
             <div class="grid grid-cols-10">
-                <div class="col-start-3 col-end-8 mt-[5%]" id="graphs"></div>
+                <div class="col-start-3 col-end-8 mt-[5%] h-[500px] w-[500px]" id="graphs"></div>
                 <div class="col-start-3 col-end-8 mt-[5%]" id="OUTPUT"></div>
             </div>
 
@@ -301,13 +305,15 @@
         var object = document.getElementById("dropdown").value;
 
         // Check if the required data is there such as an artist and a graph.
-        if(graphType == "")
+        if(typeof graphType === "undefined")
         {
-            alert("Select a graph");
+            alert("Select a graph or table");
+            return;
         }
-        if(bandOne == "")
+        else if(bandOne == "")
         {
             alert("Select an artist/band to search for");
+            return;
         }
 
         const xhttp = new XMLHttpRequest();
@@ -322,8 +328,6 @@
 
         xhttp.send("graph=" + encodeURIComponent(graphType) + "&band=" + encodeURIComponent(bandOne) + "&object=" + encodeURIComponent(object) + "&bandTwo=" + encodeURIComponent(bandTwo));
 
-
-    
         CreateData();
     }
 
@@ -336,7 +340,7 @@
             const newLoading = document.createElement("div");
             newLoading.id = "LoadingBar";
             
-            newLoading.textContent = "LOADING GRAPHS...";
+            newLoading.textContent = "LOADING DATA...";
 
             var graphLoading = document.getElementById("graphs");
 
@@ -345,10 +349,13 @@
 
         function CallDeleteLoadingGraphs()
         {
-            // Kill the child
+            // Kill the child as long as it is not a table
             var newLoading = document.getElementById("LoadingBar");
 
-            newLoading.remove();
+            if(newLoading)
+            {
+                newLoading.remove();
+            }
         }
 
         CallLoadingGraphs()
@@ -358,8 +365,17 @@
             .then(data => {
                 var toString = document.getElementById("TEST").innerHTML;
 
-          
-      
+                // Delete the old table text 
+                if(graphType != "table")
+                {
+                    var tableTitleText = document.getElementById("graphs");
+
+                    if(tableTitleText)
+                    {
+                        tableTitleText.innerHTML = "";
+                    }
+                }
+
                 // Bar chart - horizontal or vertical.
                 if (graphType == "hbar" || graphType == "bar") {
 
@@ -635,6 +651,30 @@
 
     }
 
+    // Deletes the graphs and the tables that the user had mad
+    function DeleteDashboard()
+    {
+        // Gets the tables
+        var tableChild = document.getElementById("outputTable")
+        var tableTitleText = document.getElementById("graphs")
+
+        // Allows the user to confirm their choice before they delete their graph
+        var choice = confirm("Are you sure you want to your current Dashboard")
+  
+        if(choice == true)
+        {
+            // Removes the graph not matter if it is a table or not
+            Plotly.purge('graphs');
+
+            // Checks if the table before removing it
+            if(tableChild)
+            {
+                tableChild.remove();
+                tableTitleText.innerHTML = "";
+            }
+        }
+    }
+
     // Creates an empty graph. This is when the user clicks the selected graph. It just shows it. Values
     // are not insertered into yet.
     function CreateEmptyGraph() {
@@ -642,7 +682,7 @@
         if (graphType == 'table') {
             
             var graph = document.getElementById("graphs");
-            var tableString = "<table id ='outputTable'> <tr><th>Col One</th><th>Col Two</th><tr><td>Row</td><td>Row</td></tr></table>";
+            var tableString = "<table id ='outputTable'> <tr><th>Header 1</th><th>Header 2</th><tr><td>Row 1</td><td>Row 1</td></tr></table>";
             graph.innerHTML = tableString;
 
         } else {

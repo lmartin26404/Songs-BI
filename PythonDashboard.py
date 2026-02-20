@@ -85,6 +85,7 @@ if(option == "one"):
         for lyric_line in line.split("\n"):
             for word in lyric_line.split():
 
+              
                 cleanWord = word
 
                 # Clean word properly
@@ -92,16 +93,16 @@ if(option == "one"):
                 cleanWord = re.sub(r'\W+', '', cleanWord)
                 cleanWord = cleanWord.lower().strip()
 
-          
-
                 # If the current word is a trouble word (a word that has multiple meaning)
                 # Causing probelms here with how long it takes
-                if cleanWord in trouble_words:
+                if cleanWord in trouble_words and object == "month":
                     clean_lyric = ml.clean_data(lyric_line)     
                     total = ml.run_model(clean_lyric)           # 1 -> True   0 -> False
-                
+                          
                 else:
                     total = 1
+
+           
             
                 # Checks for the counts
                 if cleanWord in objectArray:
