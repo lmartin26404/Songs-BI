@@ -124,9 +124,18 @@
                                 <input class="rounded-xl bg-slate-700 text-neutral-50 border-black pl-[2%]" id="sBar" type="text" oninput="SearchArtist(id)" autocomplete="off">
                                 <button id="xSearchbar" onClick="ClearSearchInput()" class="text-rose-400">X</button>
 
+                               
+
 
                                 <input class="rounded-xl bg-gray-700 text-neutral-50 border-black pl-[2%]" style="display:none;" id="sBarTwo" type="text" oninput="SearchArtist(id)" autocomplete="off">
                                 <button id="xSearchbar" onClick="ClearSearchInput()" class="text-rose-400">X</button>
+                                
+                     
+
+                                <label>
+                                    <input type="checkbox" name="allBands" id="allBands" onchange="DisableSearchBar()"> Search All
+                                </label>
+
                             </div>
                             <div id="searchResults1"></div>
 
@@ -182,6 +191,7 @@
     let graphType;
     let activeArtistSearch;
     let searchBefore = false;
+    let currentValue;
 
     // TODO:
     // Have pre-defined windows and just bring that one up. Certain type of graphs only make sense for some data.
@@ -230,10 +240,15 @@
     /*
      * Clears the input of the search box.
      */
-
     function ClearSearchInput() {
         var searchBox = document.getElementById("sBar");
-        searchBox.value = "";
+        var allBandsCheckbox =document.getElementById("allBands");
+
+        // Does not clear if the all bands check box is on
+        if(allBandsCheckbox.checked == false)
+        {
+            searchBox.value = "";        
+        }
 
         // Remove all the other possiable possiable searches including the one that came up.
         for (var rows = 0; rows <= 4; rows++) {
@@ -288,9 +303,6 @@
 
             xhttp.send("option=" + encodeURIComponent(option) + "&search=" + encodeURIComponent(query));
         }
-
-
-
     }
 
     /*
@@ -303,6 +315,12 @@
         var bandOne = document.getElementById("sBar").value;
         var bandTwo = document.getElementById("sBarTwo").value;
         var object = document.getElementById("dropdown").value;
+
+        // Gets the value of the checkbox to see if the user wants to select all the bands 
+        if(document.getElementById("allBands").checked)
+        {
+            bandOne = "all"
+        }
 
         // Check if the required data is there such as an artist and a graph.
         if(typeof graphType === "undefined")
@@ -336,6 +354,8 @@
     {
         function CallLoadingGraphs()
         {
+            Plotly.purge('graphs');
+            
             // Create the child
             const newLoading = document.createElement("div");
             newLoading.id = "LoadingBar";
@@ -618,6 +638,47 @@
         var y = 5;
     }
 
+    function DisableSearchBar()
+    {
+        // The search bar value and the check box
+        var getSearchBar = document.getElementById('sBar');
+        var allBandsCheckbox = document.getElementById('allBands');
+        var xSearch = document.getElementById('xSearchbar');
+
+        // Want to serach for all bands
+        if(allBandsCheckbox.checked == true)
+        {
+            currentValue = getSearchBar.value;
+            getSearchBar.value = "All Bands"
+            getSearchBar.disabled = true;
+
+            // Disable the clear button from search input
+            xSearch.style.display="none";
+
+            // Clears the serach artist
+            ClearSearchInput();
+        }
+
+        else
+        {
+            // Prevents a problem if the user trys to serach something without searching before
+           if(currentValue == null)
+            {
+                currentValue = getSearchBar.value
+                currentValue.value = ""
+            }
+
+            // Saves what the user was looking for before they selected all bands
+            else
+                getSearchBar.value = currentValue;
+                
+            SearchArtist("sBar");
+
+            getSearchBar.disabled = false;
+        }
+
+        
+    }      
 
     // Gets the button thtat is clicked to add it to the search bar. Therefore, the user does not need to type the whole artist name out.
     function ShowArtistButtonClick(divId) {
@@ -659,7 +720,7 @@
         var tableTitleText = document.getElementById("graphs")
 
         // Allows the user to confirm their choice before they delete their graph
-        var choice = confirm("Are you sure you want to your current Dashboard")
+        var choice = confirm("Are you sure you want to clear your current Dashboard")
   
         if(choice == true)
         {
