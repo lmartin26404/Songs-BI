@@ -192,6 +192,7 @@
     let activeArtistSearch;
     let searchBefore = false;
     let currentValue;
+    let graphSwapArray = [];
 
     // TODO:
     // Have pre-defined windows and just bring that one up. Certain type of graphs only make sense for some data.
@@ -423,7 +424,7 @@
                             type: 'bar',
                             orientation: 'v'
                         }],layout);
-                        UpdateGraph();
+                        UpdateGraph(graphType);
                     }
 
                     // Horizontal bar chart
@@ -449,7 +450,7 @@
                             type: 'bar',
                             orientation: 'h'
                         }],layout);
-                        UpdateGraph();
+                        UpdateGraph(graphType);
 
 
                     }
@@ -572,7 +573,7 @@
                         else
                         {
                             Plotly.newPlot('graphs', data, layout);
-                            UpdateGraph();
+                            UpdateGraph(graphType);
                         }
                     }
                     // For single graphs
@@ -586,7 +587,7 @@
                         else
                         {
                             Plotly.newPlot('graphs', data, layout);
-                            UpdateGraph();
+                            UpdateGraph(graphType);
                         }
                     }
                 }
@@ -738,7 +739,9 @@
             document.getElementById("changeTitle").value = "";
             document.getElementById("changeX").value = "";
             document.getElementById("changeY").value = "";
-            document.getElementById("changeColor").value = "blue"
+            document.getElementById("changeColor").value = "blue";
+
+            graphSwapArray.length = 0;
         }
 
     
@@ -783,43 +786,87 @@
         }
     }
 
-    // Have the user edit the graph. Such as change the title and color.
-    function UpdateGraph() 
+    // Have the user edit the graph. Such as change the title and color. Also, handles if the user switches
+    // to different types of graphs.
+    function UpdateGraph(graphType) 
     {
         var graphTitle, graphXTitle, graphYTitle;
-
+        
         // Gets the values.
         var inputTitle = document.getElementById("changeTitle").value;
-        var inputXTitle = document.getElementById("changeX").value;
+                
         var inputYTitle = document.getElementById("changeY").value;
+        var inputXTitle = document.getElementById("changeX").value;  
+
         var inputColor = document.getElementById("changeColor").value;
 
         var searchBar = document.getElementById("sBar").value;
         var dropdown = document.getElementById("dropdown").value;
         var color = document.getElementById("changeColor").value;
 
+        var oldGraphType = "";
+        var currentGraphType = graphType;
 
-        // The user did not state the tilte, x or y axis text        
-        var graphTitle = searchBar + " Singing About " + dropdown + " Counts";   
-        var graphXTitle = dropdown;
-        var graphYTitle = "Counts";
-
-        // Check what kind of graph it is on if X or Y should be fliped
-
-        // The user stated the graph title, x or y axis text
-        if(inputTitle != "")
+        var graphTitle;
+        var graphXTitle;
+        var graphYTitle;        
+        
+        // Swap the x-axes labels and the y-axes label if going from a vertical <-> horizontal
+        if(graphType !== undefined) // Not undefined then push the graph type
         {
-            graphTitle = inputTitle;
+            graphSwapArray.push(currentGraphType);
+
+            // Size larger than 2 we can acess the last element
+            var arraySize = graphSwapArray.length;
+            if(arraySize >= 2)
+            {
+                var lastElement = arraySize - 2;    // Length is +1 and want the prev element
+                oldGraphType = graphSwapArray[lastElement];
+            }
         }
-        if(inputXTitle != "")
-        {
-            graphXTitle = inputXTitle;
-        }
-        if(inputYTitle != "")
+
+        // Do not remove the user's work
+
+        graphTitle = searchBar + " Singing About " + dropdown + " Counts";   
+        graphXTitle = dropdown;
+        graphYTitle = "Counts";
+
+        if(inputYTitle !== "")
         {
             graphYTitle = inputYTitle;
         }
+        if(inputXTitle !== "")
+        {
+            graphXTitle = inputXTitle;
+        }
+        if(inputTitle !== "")
+        {
+            graphTitle = inputTitle;
+        }
 
+
+        // Might want to use a substring and have vGraph and hGraph and just look at the first letter
+        if((oldGraphType == "bar" && currentGraphType == "hbar") || (oldGraphType == "hbar" && currentGraphType == "bar"))
+        {
+            alert("HERE");
+            var temp = inputXTitle;
+            inputXTitle = inputYTitle;
+            inputYTitle = temp; 
+
+            document.getElementById("changeY").value = inputYTitle;
+            document.getElementById("changeX").value = inputXTitle;
+
+            graphXTitle = inputXTitle;
+            graphYTitle = inputYTitle;
+        }
+        else
+        {
+            document.getElementById("changeTitle").value = graphTitle;
+            document.getElementById("changeX").value = graphXTitle;
+            document.getElementById("changeY").value = graphYTitle;
+        }
+
+        // Updates the graphs
         var layout_update = {
             title:{text:graphTitle},xaxis:{title:{text:graphXTitle}},yaxis:{title:{text:graphYTitle}}
         };
@@ -828,7 +875,6 @@
             'marker.color':color
         };
         
-
         Plotly.update("graphs",data_update,layout_update)
 
     }
