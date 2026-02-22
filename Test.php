@@ -355,7 +355,7 @@
         function CallLoadingGraphs()
         {
             Plotly.purge('graphs');
-            
+
             // Create the child
             const newLoading = document.createElement("div");
             newLoading.id = "LoadingBar";
@@ -733,7 +733,15 @@
                 tableChild.remove();
                 tableTitleText.innerHTML = "";
             }
+
+            // Reset the values to empty
+            document.getElementById("changeTitle").value = "";
+            document.getElementById("changeX").value = "";
+            document.getElementById("changeY").value = "";
+            document.getElementById("changeColor").value = "blue"
         }
+
+    
     }
 
     // Creates an empty graph. This is when the user clicks the selected graph. It just shows it. Values
@@ -778,14 +786,42 @@
     // Have the user edit the graph. Such as change the title and color.
     function UpdateGraph() 
     {
+        var graphTitle, graphXTitle, graphYTitle;
+
         // Gets the values.
-        var title = document.getElementById("changeTitle").value;
-        var xtitle = document.getElementById("changeX").value;
-        var ytitle = document.getElementById("changeY").value;
+        var inputTitle = document.getElementById("changeTitle").value;
+        var inputXTitle = document.getElementById("changeX").value;
+        var inputYTitle = document.getElementById("changeY").value;
+        var inputColor = document.getElementById("changeColor").value;
+
+        var searchBar = document.getElementById("sBar").value;
+        var dropdown = document.getElementById("dropdown").value;
         var color = document.getElementById("changeColor").value;
 
+
+        // The user did not state the tilte, x or y axis text        
+        var graphTitle = searchBar + " Singing About " + dropdown + " Counts";   
+        var graphXTitle = dropdown;
+        var graphYTitle = "Counts";
+
+        // Check what kind of graph it is on if X or Y should be fliped
+
+        // The user stated the graph title, x or y axis text
+        if(inputTitle != "")
+        {
+            graphTitle = inputTitle;
+        }
+        if(inputXTitle != "")
+        {
+            graphXTitle = inputXTitle;
+        }
+        if(inputYTitle != "")
+        {
+            graphYTitle = inputYTitle;
+        }
+
         var layout_update = {
-            title:{text:title},xaxis:{title:{text:xtitle}},yaxis:{title:{text:ytitle}}
+            title:{text:graphTitle},xaxis:{title:{text:graphXTitle}},yaxis:{title:{text:graphYTitle}}
         };
 
         var data_update = {
