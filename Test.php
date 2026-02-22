@@ -88,9 +88,11 @@
                         <div>x-axex label</div>
                         <div><input type="text" id="changeX" oninput="UpdateGraph()"></div>
 
-                        <div>Change color</div>
+                        <div>Change color 1</div>
                         <div><input type="color" value="#3A72AB" id="changeColor" oninput="UpdateGraph()"></div>
                     
+                        <div>CHange color 2</div>
+                        <div><input type="color" value="#3A72AB" id="changeColor2" oninput="UpdateGraph()"></div>
 
                         <div><button id="delGraph" onclick="DeleteDashboard()" class="bg-red-600 p-[2%]">Clear Dashboard</button></div>
                     </div>
@@ -386,6 +388,9 @@
             .then(data => {
                 var toString = document.getElementById("TEST").innerHTML;
 
+                var color1 = document.getElementById("changeColor").value;
+                var color2 = document.getElementById("changeColor2").value;
+
                 // Delete the old table text 
                 if(graphType != "table")
                 {
@@ -465,6 +470,7 @@
                     valueArray = dataObj.y.map(Number);
                     artistArray = dataObj.z;
 
+
                     var xArrayOne = [];
                     var xArrayTwo = [];
 
@@ -520,19 +526,22 @@
                         xArrayTwo = yArrayTwo.slice(0);
                         yArrayTwo = tempArray.slice(0);
                     }
+
                     var trace1 = {
                         x: xArrayOne,
                         y: yArrayOne,
                         name: savedArtist,
                         orientation: ort,
-                        type: 'bar'
+                        type: 'bar',
+                        marker:{color:color1}
                     };
                     var trace2 = {
                         x: xArrayTwo,
                         y: yArrayTwo,
                         name: currentArtist,
                         orientation: ort,
-                        type: 'bar'
+                        type: 'bar',
+                        marker:{color:color2}
                     };
 
 
@@ -540,7 +549,9 @@
                         var layout = {
                             barmode: 'group'
                         };
-                    } else {
+                    } 
+                    else if(graphType == 'stack')
+                    {
                         var layout = {
                             barmode: 'stack'
                         };
@@ -549,19 +560,19 @@
 
                     var data = [trace1, trace2];
 
-                    var layout = {
-                    title: 'My Plotly Chart',
-                    paper_bgcolor: '#1e293b', 
-                    plot_bgcolor: '#334155',
-                    font:{
-                        color:'white'
-                    }
-                    };
+                    // var layout = {
+                    // title: 'My Plotly Chart',
+                    // paper_bgcolor: '#1e293b', 
+                    // plot_bgcolor: '#334155',
+                    // font:{
+                    //     color:'white'
+                    // }
+                    //};
 
                     // No songs returned then does not show any graphs.
                     // For group graphs
                     var output = document.getElementById('output');
-                    if (graphType == 'hGroup' || graphType == 'hStack') {
+                    if (graphType == 'hGroup' || graphType == 'hStack' || graphType == 'group' || graphType == 'stack') {
                         if(xArrayOne.length == 0 && yArrayOne.length == 0)
                         {
                             if(output != null)
@@ -677,8 +688,6 @@
 
             getSearchBar.disabled = false;
         }
-
-        
     }      
 
     // Gets the button thtat is clicked to add it to the search bar. Therefore, the user does not need to type the whole artist name out.
@@ -802,7 +811,8 @@
 
         var searchBar = document.getElementById("sBar").value;
         var dropdown = document.getElementById("dropdown").value;
-        var color = document.getElementById("changeColor").value;
+        var color1 = document.getElementById("changeColor").value;
+        var color2 = document.getElementById("changeColor2").value;
 
         var oldGraphType = "";
         var currentGraphType = graphType;
@@ -848,7 +858,6 @@
         // Might want to use a substring and have vGraph and hGraph and just look at the first letter
         if((oldGraphType == "bar" && currentGraphType == "hbar") || (oldGraphType == "hbar" && currentGraphType == "bar"))
         {
-            alert("HERE");
             var temp = inputXTitle;
             inputXTitle = inputYTitle;
             inputYTitle = temp; 
@@ -871,8 +880,9 @@
             title:{text:graphTitle},xaxis:{title:{text:graphXTitle}},yaxis:{title:{text:graphYTitle}}
         };
 
+
         var data_update = {
-            'marker.color':color
+            'marker.color':[color1,color2]
         };
         
         Plotly.update("graphs",data_update,layout_update)
