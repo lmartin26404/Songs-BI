@@ -91,8 +91,8 @@
                         <div>Change color 1</div>
                         <div><input type="color" value="#3A72AB" id="changeColor" oninput="UpdateGraph()"></div>
                     
-                        <div>CHange color 2</div>
-                        <div><input type="color" value="#3A72AB" id="changeColor2" oninput="UpdateGraph()"></div>
+                        <div id="changeColorText2" style="display:none;">Change color 2</div>
+                        <div><input type="color" value="#3A72AB" style="display:none;" id="changeColor2" oninput="UpdateGraph()"></div>
 
                         <div><button id="delGraph" onclick="DeleteDashboard()" class="bg-red-600 p-[2%]">Clear Dashboard</button></div>
                     </div>
@@ -206,13 +206,14 @@
     function ShowHideDiv(id) {
         graphType = id;
 
-        var secondSearchBar = document.getElementById('sBarTwo');
-
         // Need another search box if it is a group or stack graph
         if (graphType == 'group' || graphType == 'stack' || graphType == 'hStack' || graphType == 'hGroup') {
-            secondSearchBar.style.display = 'block';
+            document.getElementById("sBarTwo").style.display = 'block';
+            document.getElementById("changeColor2").style.display = "block";
         } else {
-            secondSearchBar.style.diplay = 'none';
+
+            document.getElementById("sBarTwo").style.display = "none";
+            document.getElementById("changeColor2").style.display = "none";
         }
 
         // Displays the different graph if the graphs have been displayed before.
@@ -560,15 +561,6 @@
 
                     var data = [trace1, trace2];
 
-                    // var layout = {
-                    // title: 'My Plotly Chart',
-                    // paper_bgcolor: '#1e293b', 
-                    // plot_bgcolor: '#334155',
-                    // font:{
-                    //     color:'white'
-                    // }
-                    //};
-
                     // No songs returned then does not show any graphs.
                     // For group graphs
                     var output = document.getElementById('output');
@@ -835,12 +827,17 @@
             }
         }
 
-        // Do not remove the user's work
-
         graphTitle = searchBar + " Singing About " + dropdown + " Counts";   
         graphXTitle = dropdown;
         graphYTitle = "Counts";
 
+        // Do not remove the user's work
+        if(graphType == "stack" || graphType == "group" || graphType == "hStack")
+        {
+            graphTitle = searchBar + " and " + document.getElementById("sBarTwo").value + " Singing About " + dropdown + " Counts";
+        }
+
+       // Allows the user to edit the graph
         if(inputYTitle !== "")
         {
             graphYTitle = inputYTitle;
@@ -855,8 +852,9 @@
         }
 
 
+
         // Might want to use a substring and have vGraph and hGraph and just look at the first letter
-        if((oldGraphType == "bar" && currentGraphType == "hbar") || (oldGraphType == "hbar" && currentGraphType == "bar"))
+        if((oldGraphType.substring(0) == "bar" && currentGraphType == "hbar") || (oldGraphType == "hbar" && currentGraphType == "bar"))
         {
             var temp = inputXTitle;
             inputXTitle = inputYTitle;
