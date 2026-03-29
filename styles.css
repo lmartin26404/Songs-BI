@@ -1,0 +1,63 @@
+  div {
+      color: whitesmoke;
+  }
+
+  .input-wrapper {
+      position: relative;
+      display: block;
+      max-width: 150px;
+      min-width: 150px;
+  }
+
+  .input-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+      box-sizing: border-box;
+  }
+
+  .input-wrapper button {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      /* center vertically */
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+  }
+
+  input[type=text] {
+      background-color: #314158;
+  }
+
+
+
+  table {
+      border-collapse: collapse;
+      margin: 25px 0;
+      font-size: 0.9em;
+      font-family: sans-serif;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      color: white;
+      background-color: #314158;
+      min-width: 200px;
+      text-transform: capitalize;
+  }
+
+  table th {
+      font-weight: bold;
+      background-color: rgb(30, 140, 60);
+  }
+
+  table tr:nth-child(even) {
+      background-color: #50668A;
+  }
+
+  table tr:last-of-type {
+      border-bottom: 2px solid rgb(30, 140, 60);
+  }
+
+  #output {
+      background-color: white;
+      text-align: center;
+  }

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src='https://cdn.plot.ly/plotly-3.1.0.min.js'></script>
+    <link rel="shortcut icon" href="#">
+
+
+    <title>Dashboard</title>
+</head>
+
+
+<body id="body" class="bg-slate-600">
+
+    <!-- The needed external files -->
+    <script src="/DashboardJS.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Master grid -->
+    <div class="grid grid-cols-10 h-full">
+
+
+
+        <!-- Left with Graphs and the Editor -->
+        <div class="grid grid-cols-1 grid-rows-2 bg-slate-600 h-[40%] col-span-2">
+
+            <!-- Graphs -->
+            <div class="grid grid-rows-7 grid-cols-3 gap-2 p-[2%] overflow-y-auto col-span-2">
+                <div class="col-span-3 text-2xl pb-[5%]">Visualizations</div>
+
+                <div id="bar" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/barChart.svg"> </div>
+
+                <div id="hbar" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/barHor.svg"></div>
+
+                <div id="table" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/table.svg"></div>
+
+                <div> <img class="aspect-square h-full w-full" src="Pictures/line.svg"></div>
+
+                <div><img class="aspect-square h-full w-full" src="Pictures/scatter.svg"> </div>
+
+                <div> <img class="aspect-square h-full w-full" src="Pictures/map.svg"></div>
+
+                <div id="stack" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/stackedChart.svg"></div>
+
+                <div id="group" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/groupBarChart.svg"></div>
+
+                <div id="hStack" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/groupBarHor.svg"></div>
+
+                <div id="hGroup" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/heatmap.svg"></div>
+
+                <div> <img class="aspect-square h-full w-full" src="Pictures/funnel.svg"></div>
+
+                <div><img class="aspect-square h-full w-full" src="Pictures/histogram.svg"></div>
+
+
+            </div>
+
+
+
+            <!-- Editor -->
+            <div class="bg-slate-600 col-span-2">
+                <div style="display:non;" class="grid grid-cols-2 gap-2">
+                    <div class="col-span-2 text-2xl px-[2%]">Editor</div>
+
+                    <div class="px-[5%] py-[2%] gap-2">
+                        <div>Change Title</div>
+                        <div><input type="text" id="changeTitle" oninput="UpdateGraph()"></div>
+
+                        <div>y-axes label</div>
+                        <div> <input type="text" id="changeY" oninput="UpdateGraph()"></div>
+
+                        <div>x-axex label</div>
+                        <div><input type="text" id="changeX" oninput="UpdateGraph()"></div>
+
+                        <div>Change color 1</div>
+                        <div><input type="color" value="#3A72AB" id="changeColor" oninput="UpdateGraph()"></div>
+
+                        <div id="changeColorText2" style="display:none;">Change color 2</div>
+                        <div><input type="color" value="#3A72AB" style="display:none;" id="changeColor2"
+                                oninput="UpdateGraph()"></div>
+
+                        <div><button id="delGraph" onclick="DeleteDashboard()" class="bg-red-600 p-[2%]">Clear
+                                Dashboard</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Dashboard in the middle -->
+        <div class="bg-slate-500 col-span-6">
+
+            <div class="grid grid-cols-10">
+                <div class="col-start-3 col-end-8 mt-[5%] h-[500px] w-[500px]" id="graphs"></div>
+                <div class="col-start-3 col-end-8 mt-[5%]" id="OUTPUT"></div>
+            </div>
+
+        </div>
+
+        <div class="bg-slate-600 col-span-2">
+            <!-- Data Selection on the right -->
+            <div class="grid grid-cols-2">
+                <div class="col-span-2 text-2xl p-[2%] ">Data Selection</div>
+                <div style="display:non;" id="barDiv">
+
+                    <details name="displayOptions" id="object" class="p-[3%]" onchange="ActiveDetails(id)" open>
+                        <summary>Object</summary>
+
+                        <div class="grid grid-rows-2 grid-cols-1 mx-[8%] mb-[5%]">
+
+                            <div>Band: </div>
+                            <div class="input-wrapper">
+                                <input class="rounded-xl bg-slate-700 text-neutral-50 border-black pl-[2%]" id="sBar"
+                                    type="text" oninput="SearchArtist(id)" autocomplete="off">
+                                <button id="xSearchbar" onClick="ClearSearchInput()" class="text-rose-400">X</button>
+
+
+
+
+                                <input class="rounded-xl bg-gray-700 text-neutral-50 border-black pl-[2%]"
+                                    style="display:none;" id="sBarTwo" type="text" oninput="SearchArtist(id)"
+                                    autocomplete="off">
+                                <button id="xSearchbar" onClick="ClearSearchInput()" class="text-rose-400">X</button>
+
+
+
+                                <label>
+                                    <input type="checkbox" name="allBands" id="allBands" onchange="DisableSearchBar()">
+                                    Search All
+                                </label>
+
+                            </div>
+                            <div id="searchResults1"></div>
+
+                            <div id="TEST" style="display:none;">TEST</div>
+
+
+                            <div id="display2" class="align-middle"></div>
+
+
+                            <div id="display1" class="align-middle">Topic:</div>
+                            <select
+                                class="max-h-[60%] bg-gray-700 text-slate-50 rounded-m flex justify-center items-center mt-[7%]"
+                                id="dropdown">
+                                <option value="gender">Gender</option>
+                                <option value="direction">Direction</option>
+                                <option value="response">Response</option>
+                                <option value="solar">Solar</option>
+                                <option value="day">Day</option>
+                                <option value="month">Month</option>
+                                <option value="drinks">Drinks</option>
+                                <option value="cars">Cars</option>
+                                <option value="relationship">Relationships</option>
+
+                            </select>
+                        </div>
+
+                    </details>
+
+                    <details name="displayOptions" id="nWord" class="p-[3%]" onchange="ActiveDetails(id)">
+                        <summary>N<sup>th</sup> word</summary>
+
+                        <div>nth word and stuff</div>
+
+                    </details>
+
+                    <div class="flex justify-center col-span-2 pt-[15%]">
+                        <button class="bg-emerald-600 p-[2%]" onclick="DisplayData()">Analysize Data</button>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</body>
