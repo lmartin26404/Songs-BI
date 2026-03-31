@@ -31,10 +31,11 @@ headers = {"Authorization": f"Bearer {client_access_token}"}
 
 # Change these values
 # Total songs = songs_per_page * max_pages
-band_array = ["Radiohead","Pink Floyd"]
+band_array = ["Prince","KISS","Nivana","The Bangles","Miley Cyrus","Neil Young","The Moody Blues","The Strokes","Lorde","Radiohead","Michael Jackson","REO Speedwagon","Blondie"]
 
-songs_per_page = 2
-max_pages = 2
+# 200 songs per artist
+songs_per_page = 25
+max_pages = 8
 
 song_id_array = []
 
@@ -150,17 +151,17 @@ def get_Genius_Data(songs_per_page, max_pages):
     cursor.execute(
     """
       INSERT IGNORE INTO Song_Table
-        (song_id, album_id, song_path, song_title, song_artist, song_language, song_release_date, song_clip, song_producer, song_writer, song_views)
+        (song_id, album_id, song_path, song_title, song_artist, song_language, song_release_date, song_clip, song_producer, song_writer, song_lyrics, song_views)
       VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)               
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)               
     """,
-      (str(song_id), str(album_id), ''.join(song_path), ''.join(song_title), ''.join(song_artist), ''.join(song_language), ''.join(song_release_date), ''.join(song_clip), str(song_producer), str(song_writer),  int(song_views))
+      (str(song_id), str(album_id), str(song_path), str(song_title), str(song_artist), str(song_language), str(song_release_date), str(song_clip), str(song_producer), str(song_writer), "".join(song_lyrics),  str(song_views))
     )
 
     cursor.execute(
     """
       INSERT IGNORE INTO Album_Table
-        (album_id, album_name, album_relase, album_artist, album_cover)
+        (album_id, album_name, album_release, album_artist, album_cover)
       VALUES
         (%s,%s,%s,%s,%s)
     """,
@@ -169,10 +170,10 @@ def get_Genius_Data(songs_per_page, max_pages):
 
     connection.commit()
 
-    # Prevent being rate limited
+    # Prevent being rate limited by sleeping after X amount of songs
     sleep_counter = sleep_counter + 1
     if sleep_counter >= max_songs_before_sleep:
-      time.sleep(1)
+      time.sleep(5) # Number of seconds to sleep
       sleep_counter = 0
 
   

@@ -4,16 +4,14 @@
 
 require_once "AnalysisData.php";            // Calls the python script that then calls PythonDashBoard
 require_once "DatabaseConnection.php";      // database connects
-require_once "ServerFunctions.php";         // Downloads/parsing the data
+// require_once "ServerFunctions.php";         // Downloads/parsing the data
 
 
 function Data()
 {
- 
-
     $object = $_POST['object'] ?? 'day';
-    $artist = $_POST['band'] ?? 'TOOL';
-    $graph = $_POST['graph'] ?? '';
+    $artist = $_POST['band'] ?? 'queen';
+    $graph = $_POST['graph'] ?? 'bar';
     
     $keysArray = [];
     $valuesArray = [];
@@ -32,7 +30,7 @@ function Data()
 
         $option = "one";
         $object = $_POST['object'] ?? 'day';
-        $artist = $_POST['band'] ?? 'TOOL';
+        $artist = $_POST['band'] ?? 'queen';
        
 
         // Finds the objects
@@ -70,7 +68,7 @@ function Data()
 
         $option = "one";
         $object = $_POST['object'] ?? 'day';
-        $bandOne = $_POST['band'] ?? 'TOOL';
+        $bandOne = $_POST['band'] ?? 'queen';
         $bandTwo = $_POST['bandTwo'] ?? '';
 
         $group = "group";
@@ -120,15 +118,15 @@ function Data()
     $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
     $conn = $db->connect();
 
-    $currentArtist = FindCurrentArtist($conn);
-    $songCount = FindSongCount($conn, $artist);
+    //FindCurrentArtist($conn);
+    
 
     $conn->close();
 }
 
 function GetValues($conn)
 {
-        // Gets the values that have been found. They are put into a SQL table.
+    // Gets the values that have been found. They are put into a SQL table.
     $sql = "SELECT key_col, value_col, artist from songs_return";
     $result = $conn->query($sql);
 
@@ -201,7 +199,7 @@ function SearchboxArtistValues()
         $conn = $db->connect();
 
         // Gets the value out of a search bar to then look for them in the database. It uses the SQL keyword like to find it.
-        $stmt = $conn->prepare("select distinct artist from songs_data where artist like ?;");
+        $stmt = $conn->prepare("select distinct song_artist from Song_Table where song_artist like ?;");
         $searchItem = '%' . $search . '%';
 
         // Do not want to bring up results if the search bar is empty.
@@ -220,7 +218,7 @@ function SearchboxArtistValues()
                         break;
                     } else {
                         // The output of the searches.
-                        $resultSearch .=  '<br> <button style="background-color:dimgray; min-width:100%; " onclick="ShowArtistButtonClick(' . $counter . ')" id=' . $counter . '>' . $row["artist"] . '</button> ';
+                        $resultSearch .=  '<br> <button style="background-color:dimgray; min-width:100%; " onclick="ShowArtistButtonClick(' . $counter . ')" id=' . $counter . '>' . $row["song_artist"] . '</button> ';
                         $counter = $counter + 1;
                     }
                 }

@@ -6,23 +6,188 @@ let activeArtistSearch;
 let searchBefore = false;
 let currentValue;
 let graphSwapArray = [];
+let currentSelected = "";
+let figure;
+
+
+// Values for the graphs
+let idFigCounter = 0;
+xPos = 150;
+yPos = 150;
+height = 200;
+width = 200;
+xLabel = "X Label";
+yLabel = "Y Label";
+color = "blue";
+
+class Figure
+{
+    constructor(id, xPos, yPos, height, width, type, title, xLabel, yLabel, color)
+    {
+        this.id = id;
+        this.xPos = xPos;
+        this.yPos = yPos;
+        this.height = height;
+        this.width = width;
+        this.type = type;
+        this.title = title;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+        this.color = color;
+        // this.xData of the array
+        // this.yData of the array
+
+    }
+
+    // Add the needed functions of the graphs
+}
+
+// Checks that the user clicks a figure
+document.addEventListener('click',function(event)
+{
+
+    // Make this into a function
+    // Call a function that then populates the EDITOR view with the data based off the Class Figure
+
+    // Checks if the user clicked on a valid figure such as a graph or a table
+    let isFig = CheckValidFigure();
+
+    if(isFig == true)
+    {
+        UpdateEditorValues();
+    }
+});
+
+
+
+
+
+function UpdateEditorValues()
+{
+    // Loop over all the Figure until the id matches the current one
+  
+    document.getElementById("xPos").value = figure.xPos;
+}
+
+function CheckValidFigure()
+{
+    const clickedFigure = event.target.id;
+
+    
+
+    currentSelected = "" + clickedFigure;
+
+    var figPre = "";
+    var figPos = "";
+    
+    if(clickedFigure.length >= 3)
+    {
+        figPre = clickedFigure.substring(0,2);  // Id
+        figPos = clickedFigure.substring(3);    // number
+    }
+
+    // The user clicked a Fig
+    if(figPre == "id")
+    {
+        var curFig = event.target.id;
+        currentSelected = curFig;
+
+        document.getElementById("CurrentGraph").innerHTML = currentSelected;
+
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+}
 
 // TODO:
 // Have pre-defined windows and just bring that one up. Certain type of graphs only make sense for some data.
+
 
 /*
  * Displays the corresponding options for the user selected graph. Not all options are possiable for graphs. For an example
  * only one artist can be displayed for single bar chart when a group bar chart brings up multiple artist.
  */
-function ShowHideDiv(id) {
+function CreateFigure(id) {
     graphType = id;
 
+    // Everything that makes up a graph
+    id = "id" + idFigCounter;
+    var xPos = "150px";
+    var yPos = "350px";
+    var height = "400px";
+    var width = "400px";
+    type = "bar";            
+    title = idFigCounter + " Title";
+    var xLabel = idFigCounter + " X LABEL";
+    var yLabel = idFigCounter + " Y LABEL";
+    color = "blue";          
+
+    figure = new Figure(id, xPos, yPos, height, width, type, title, xLabel, yLabel, color);
+    
+    // Creates a new Figure which is a div that holds the graph/table
+    var dashboard = document.getElementById("dashboard");
+
+    const childFigure = document.createElement("div");
+
+    childFigure.draggable = "true";
+
+
+   
+    childFigure.ondragstart = function(){};
+
+    childFigure.id = figure.id;
+
+    childFigure.style.background = figure.color;
+    childFigure.style.height = figure.height;
+    childFigure.style.width = figure.width;
+
+    //childFigure.style.position = "fixed";
+    childFigure.style.top = figure.xPos;
+    childFigure.style.left =  figure.yPos;
+    childFigure.classList.add('testGraph');
+
+    document.getElementById("CurrentGraph").value = document.getElementById("CurrentGraph").value + figure.id + " is ";
+
+
+    dashboard.append(childFigure);
+
+    // Creates a bar chart - will have to change this later on.
+    var data = [{
+        x: ['40','20'],
+        y: ['39','50'],
+    type: figure.type,
+    orientation: 'v'
+    }];
+
+    var layout = {
+        title: figure.title,
+        paper_bgcolor: '#1e293b',
+        plot_bgcolor: '#334155',
+        font: {
+           color: figure.color
+        }
+    };
+
+    Plotly.newPlot(figure.id, data, layout);
+
+
+    idFigCounter++;
+
+    // Fix this at some point
+    childFigure.ondragstart = function() {StartDrag();};
+    childFigure.ondragend = function() {EndDrag();};
+
+
+/*
     // Need another search box if it is a group or stack graph
     if (graphType == 'group' || graphType == 'stack' || graphType == 'hStack' || graphType == 'hGroup') {
         document.getElementById("sBarTwo").style.display = 'block';
         document.getElementById("changeColor2").style.display = "block";
     } else {
-
         document.getElementById("sBarTwo").style.display = "none";
         document.getElementById("changeColor2").style.display = "none";
     }
@@ -32,14 +197,6 @@ function ShowHideDiv(id) {
         DisplayData();
     }
 
-    var divID = id + "Div"
-    //var test = document.getElementById(divID);
-    //test.style.display = 'block';
-
-    // Just displays the graph which is empty.
-
-    var output = document.getElementById("OUTPUT");
-
     // Remove the table if it is there
     var outputTable = document.getElementById("outputTable")
 
@@ -47,7 +204,91 @@ function ShowHideDiv(id) {
         outputTable.remove();
     }
 
-    CreateEmptyGraph();
+    
+
+    CreateEmptyGraph();*/
+}
+
+// Bad gloabl variables
+let xStart = 0; let yStart = 0; let xEnd = 0; let yEnd = 0;
+
+function StartDrag()
+{
+    let xStart = 0; let yStart = 0; let xEnd = 0; let yEnd = 0;
+    
+
+    let isFig = CheckValidFigure();
+
+    // Get out of the current function not a fig so don't move it
+    if(isFig == false)
+    {
+        return;
+    }
+
+    // get the selected fig
+    const clickedFigure = event.target.id;
+
+    var element = document.getElementById(clickedFigure);
+    
+    const rect = element.getBoundingClientRect();
+
+    // Find the start of the mouse
+    xStart = event.clientX;
+    yStart = event.clientY;
+
+    var rTopBefore = rect.top;
+    var rBottomBefore = rect.bottom;
+    var rLeftBefore = rect.left;
+    var rRightBefore = rect.right;
+}
+
+function EndDrag()
+{    
+    let isFig = CheckValidFigure();
+
+    // Get out of the current function not a fig so don't move it
+    if(isFig == false)
+    {
+        return;
+    }
+
+    // get the selected fig
+    const clickedFigure = event.target.id;
+
+    var element = document.getElementById(clickedFigure);
+
+    const rect = element.getBoundingClientRect();
+
+    // Find the end of the mouse
+    xEnd = event.clientX;
+    yEnd = event.clientY;
+
+    var rTopAfter = rect.top;
+    var rBottomAfter = rect.bottom;
+    var rLeftAfter = rect.left;
+    var rRightAfter = rect.right;
+
+    FindDragDistance(rTopAfter, rBottomAfter, rLeftAfter, rRightAfter);
+   
+}
+
+function FindDragDistance(rTopAfter, rBottomAfter, rLeftAfter, rRightAfter)
+{
+    var deltaX = Math.abs(xEnd - xStart);
+    var deltaY = Math.abs(yEnd - yStart);
+
+    // Sets the Fig to the new location
+    const clickedFigure = event.target.id;
+
+    var element = document.getElementById(clickedFigure);
+    const rect = element.getBoundingClientRect();
+
+    element.style.position = "absolute";
+
+    element.style.top = deltaY + 'px';
+    element.style.bottom = (deltaY + (rect.top - rect.bottom)) + 'px';
+    element.style.left = deltaX + 'px';
+    element.style.right = (deltaX + (rect.right - rect.left)) + 'px';
 }
 
 /*
@@ -160,7 +401,7 @@ function DisplayData() {
 // Adds the data to the graph from a div.
 function CreateData() {
     function CallLoadingGraphs() {
-        Plotly.purge('graphs');
+        Plotly.purge(figure.id);
 
         // Create the child
         const newLoading = document.createElement("div");
@@ -168,7 +409,7 @@ function CreateData() {
 
         newLoading.textContent = "LOADING DATA...";
 
-        var graphLoading = document.getElementById("graphs");
+        var graphLoading = document.getElementById(figure.id);
 
         graphLoading.appendChild(newLoading);
     }
@@ -194,7 +435,7 @@ function CreateData() {
 
             // Delete the old table text 
             if (graphType != "table") {
-                var tableTitleText = document.getElementById("graphs");
+                var tableTitleText = document.getElementById(figure.id);
 
                 if (tableTitleText) {
                     tableTitleText.innerHTML = "";
@@ -222,7 +463,7 @@ function CreateData() {
                         }
                     };
 
-                    Plotly.newPlot('graphs', [{
+                    Plotly.newPlot(figure.id, [{
                         x: xData,
                         y: yData,
                         type: 'bar',
@@ -248,7 +489,7 @@ function CreateData() {
                         }
                     };
 
-                    Plotly.newPlot('graphs', [{
+                    Plotly.newPlot(figure.id, [{
                         x: yData,
                         y: xData,
                         type: 'bar',
@@ -364,32 +605,32 @@ function CreateData() {
                 if (graphType == 'hGroup' || graphType == 'hStack' || graphType == 'group' || graphType == 'stack') {
                     if (xArrayOne.length == 0 && yArrayOne.length == 0) {
                         if (output != null) {
-                            Plotly.purge('graphs');
+                            Plotly.purge(figure.id);
                             output.innerHTML = "No songs Found"
                         }
                     }
                     else {
-                        Plotly.newPlot('graphs', data, layout);
+                        Plotly.newPlot(figure.id, data, layout);
                         UpdateGraph(graphType);
                     }
                 }
                 // For single graphs
                 else if (graphType == 'bar' || graphType == 'hbar') {
                     if (yData.length == 0 && output != null) {
-                        Plotly.purge('graphs');
+                        Plotly.purge(figure.id);
                         output.innerHTML = "No songs found";
                     }
                     else {
-                        Plotly.newPlot('graphs', data, layout);
+                        Plotly.newPlot(figure.id, data, layout);
                         UpdateGraph(graphType);
                     }
                 }
             }
             else if (graphType == 'table') {
                 // Delete old graphs so the table does not show also
-                Plotly.purge('graphs');
+                Plotly.purge(figure.id);
 
-                var outputDiv = document.getElementById("graphs");
+                var outputDiv = document.getElementById(figure.id);
                 var objectValue = document.getElementById('dropdown');
 
                 const dataObj = JSON.parse(toString);
@@ -420,14 +661,6 @@ function CreateData() {
             CallDeleteLoadingGraphs();
         })
         .catch(err => console.error(err));
-}
-
-
-/*
- * Changes a gobal variable that gets the current open details tab. This is used to make sure that everything is filled out. For an example if the Object title is open and if they are missing the band to search for it gives the user a warning.
- */
-function ActiveDetails(id) {
-    var y = 5;
 }
 
 function DisableSearchBar() {
@@ -502,14 +735,14 @@ function ShowArtistButtonClick(divId) {
 function DeleteDashboard() {
     // Gets the tables
     var tableChild = document.getElementById("outputTable")
-    var tableTitleText = document.getElementById("graphs")
+    var tableTitleText = document.getElementById(figure.id)
 
     // Allows the user to confirm their choice before they delete their graph
     var choice = confirm("Are you sure you want to clear your current Dashboard")
 
     if (choice == true) {
         // Removes the graph not matter if it is a table or not
-        Plotly.purge('graphs');
+        Plotly.purge(figure.id);
 
         // Checks if the table before removing it
         if (tableChild) {
@@ -532,10 +765,11 @@ function DeleteDashboard() {
 // Creates an empty graph. This is when the user clicks the selected graph. It just shows it. Values
 // are not insertered into yet.
 function CreateEmptyGraph() {
+
     // Creates a table.
     if (graphType == 'table') {
 
-        var graph = document.getElementById("graphs");
+        var graph = document.getElementById(figure.id);
         var tableString = "<table id ='outputTable'> <tr><th>Header 1</th><th>Header 2</th><tr><td>Row 1</td><td>Row 1</td></tr></table>";
         graph.innerHTML = tableString;
 
@@ -564,7 +798,7 @@ function CreateEmptyGraph() {
             }
         };
 
-        Plotly.newPlot('graphs', data, layout);
+        Plotly.newPlot(figure.id, data, layout);
     }
 }
 
@@ -656,6 +890,6 @@ function UpdateGraph(graphType) {
         'marker.color': [color1, color2]
     };
 
-    Plotly.update("graphs", data_update, layout_update)
+    Plotly.update(figure.id, data_update, layout_update)
 
 }

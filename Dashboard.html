@@ -29,36 +29,36 @@
             <div class="grid grid-rows-7 grid-cols-3 gap-2 p-[2%] overflow-y-auto col-span-2">
                 <div class="col-span-3 text-2xl pb-[5%]">Visualizations</div>
 
-                <div id="bar" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
-                        src="Pictures/barChart.svg"> </div>
+                <div id="bar" onclick="CreateFigure(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/barChart.svg" draggable="false"> </div>
 
-                <div id="hbar" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
-                        src="Pictures/barHor.svg"></div>
+                <div id="hbar" onclick="CreateFigure(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/barHor.svg" draggable="false"></div>
 
-                <div id="table" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
-                        src="Pictures/table.svg"></div>
+                <div id="table" onclick="CreateFigure(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/table.svg" draggable="false"></div>
 
-                <div> <img class="aspect-square h-full w-full" src="Pictures/line.svg"></div>
+                <div> <img class="aspect-square h-full w-full" src="Pictures/line.svg" draggable="false"></div>
 
-                <div><img class="aspect-square h-full w-full" src="Pictures/scatter.svg"> </div>
+                <div><img class="aspect-square h-full w-full" src="Pictures/scatter.svg" draggable="false"> </div>
 
-                <div> <img class="aspect-square h-full w-full" src="Pictures/map.svg"></div>
+                <div> <img class="aspect-square h-full w-full" src="Pictures/map.svg" draggable="false"></div>
 
-                <div id="stack" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
-                        src="Pictures/stackedChart.svg"></div>
+                <div id="stack" onclick="CreateFigure(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/stackedChart.svg" draggable="false"></div>
 
-                <div id="group" onclick="ShowHideDiv(this.id)"> <img class="aspect-square h-full w-full"
-                        src="Pictures/groupBarChart.svg"></div>
+                <div id="group" onclick="CreateFigure(this.id)"> <img class="aspect-square h-full w-full"
+                        src="Pictures/groupBarChart.svg" draggable="false"></div>
 
-                <div id="hStack" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
-                        src="Pictures/groupBarHor.svg"></div>
+                <div id="hStack" onclick="CreateFigure(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/groupBarHor.svg" draggable="false"></div>
 
-                <div id="hGroup" onclick="ShowHideDiv(this.id)"><img class="aspect-square h-full w-full"
-                        src="Pictures/heatmap.svg"></div>
+                <div id="hGroup" onclick="CreateFigure(this.id)"><img class="aspect-square h-full w-full"
+                        src="Pictures/heatmap.svg" draggable="false"></div>
 
-                <div> <img class="aspect-square h-full w-full" src="Pictures/funnel.svg"></div>
+                <div> <img class="aspect-square h-full w-full" src="Pictures/funnel.svg" draggable="false"></div>
 
-                <div><img class="aspect-square h-full w-full" src="Pictures/histogram.svg"></div>
+                <div><img class="aspect-square h-full w-full" src="Pictures/histogram.svg" draggable="false"></div>
 
 
             </div>
@@ -71,6 +71,10 @@
                     <div class="col-span-2 text-2xl px-[2%]">Editor</div>
 
                     <div class="px-[5%] py-[2%] gap-2">
+
+        
+                        <div id="CurrentGraph"> DEV </div>
+
                         <div>Change Title</div>
                         <div><input type="text" id="changeTitle" oninput="UpdateGraph()"></div>
 
@@ -79,6 +83,19 @@
 
                         <div>x-axex label</div>
                         <div><input type="text" id="changeX" oninput="UpdateGraph()"></div>
+
+                        <div>xPos</div>
+                        <div><input type="text" id="xPos" oninput="UpdateGraph()"></div>
+
+                        <div>yPos</div>
+                        <div><input type="text" id="yPos" oninput="UpdateGraph()"></div>
+
+                        <div>Height</div>
+                        <div><input type="text" id="height" oninput="UpdateGraph()"></div>
+
+                        <div>Width</div>
+                        <div><input type="text" id="width" oninput="UpdateGraph()"></div>
+
 
                         <div>Change color 1</div>
                         <div><input type="color" value="#3A72AB" id="changeColor" oninput="UpdateGraph()"></div>
@@ -95,22 +112,28 @@
         </div>
 
         <!-- The Dashboard in the middle -->
-        <div class="bg-slate-500 col-span-6">
+        <div class="bg-slate-500 col-span-6" id="dashboard">
 
             <div class="grid grid-cols-10">
+
+                <!-- 
                 <div class="col-start-3 col-end-8 mt-[5%] h-[500px] w-[500px]" id="graphs"></div>
                 <div class="col-start-3 col-end-8 mt-[5%]" id="OUTPUT"></div>
+                -->
             </div>
 
         </div>
 
         <div class="bg-slate-600 col-span-2">
+
+
+            
             <!-- Data Selection on the right -->
             <div class="grid grid-cols-2">
                 <div class="col-span-2 text-2xl p-[2%] ">Data Selection</div>
                 <div style="display:non;" id="barDiv">
 
-                    <details name="displayOptions" id="object" class="p-[3%]" onchange="ActiveDetails(id)" open>
+                    <details name="displayOptions" id="object" class="p-[3%]"  open>
                         <summary>Object</summary>
 
                         <div class="grid grid-rows-2 grid-cols-1 mx-[8%] mb-[5%]">
@@ -164,7 +187,7 @@
 
                     </details>
 
-                    <details name="displayOptions" id="nWord" class="p-[3%]" onchange="ActiveDetails(id)">
+                    <details name="displayOptions" id="nWord" class="p-[3%]">
                         <summary>N<sup>th</sup> word</summary>
 
                         <div>nth word and stuff</div>

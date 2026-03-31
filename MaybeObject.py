@@ -51,7 +51,7 @@ def get_data():
 
     cursor = connection.cursor()
 
-    cursor.execute("SELECT distinct lyrics FROM songs_data WHERE lyrics LIKE '% May %';")
+    cursor.execute("SELECT distinct lyrics FROM Song_Table WHERE song_lyrics LIKE '% May %';")
 
     rows = cursor.fetchall()  
 

@@ -1,5 +1,5 @@
 # All the imports
-import MaybeObject as ml
+#import MaybeObject as ml
 
 import sys
 import pandas as pd
@@ -30,9 +30,9 @@ if(option == "one"):
     
     # The query that is going to be ran
     if nosplit == "all":
-        cursor.execute("SELECT * FROM songs_data;")
+        cursor.execute("SELECT * FROM Song_Table;")
     else:
-        cursor.execute("SELECT * FROM songs_data where artist = %s;", (artist,))
+        cursor.execute("SELECT * FROM Song_Table where song_artist = %s;", (artist,))
 
     # The object to look for
     objectArray = []
@@ -65,7 +65,7 @@ if(option == "one"):
 
     # Converts the array into a dataframe with the right column headers.
     df_pulled = pd.DataFrame(results)
-    df_pulled.columns = ["id","title","album","year","genre","artist","lyrics"]
+    df_pulled.columns = ["song_id","album_id","song_path","song_title","song_artist","song_language","song_relase_date","song_clip","song_producer","song_writer","song_lyrics","song_views"]
 
     # Creates an empty dictionary used to store the Object Word followed by the Count
     word_count = {}
@@ -79,9 +79,8 @@ if(option == "one"):
     # Loop through the dataframe to find different information
     counter = 0
     for index, row in df_pulled.iterrows():
-        line = row["lyrics"].lower()
+        line = row["song_lyrics"].lower()
 
-     
         for lyric_line in line.split("\n"):
             for word in lyric_line.split():
 
@@ -96,8 +95,9 @@ if(option == "one"):
                 # If the current word is a trouble word (a word that has multiple meaning)
                 # Causing probelms here with how long it takes
                 if cleanWord in trouble_words and object == "month":
-                    clean_lyric = ml.clean_data(lyric_line)     
-                    total = ml.run_model(clean_lyric)           # 1 -> True   0 -> False
+                    #clean_lyric = ml.clean_data(lyric_line)     
+                    #total = ml.run_model(clean_lyric)           # 1 -> True   0 -> False
+                    total = total + 1
                           
                 else:
                     total = 1
@@ -109,8 +109,9 @@ if(option == "one"):
                     if cleanWord not in word_count:
                         word_count[cleanWord] = total
                     else:
-                        word_count[cleanWord] += total
-            
+                        word_count[cleanWord] += total     
+
+
     # Adds the dictionary to a SQL database
     for key_col, value_col in word_count.items():
         cursor.execute("INSERT INTO songs_return (key_col, value_col, artist) VALUES (%s, %s, %s)", (str(key_col), int(value_col), ''.join(artist)))
@@ -131,7 +132,7 @@ if(option == "two"):
     stopWordsArray = ["i","me","my","myself","we","our","ours","ourselves","you","your","yours","yourself","yourselves","he","him","his","himself","she","her","hers","herself","it","its","itself","they","them","their","theirs","themselves","what","which","who","whom","this","that","these","those","am","is","are","was","were","be","been","being","have","has","had","do","does","did","doing","a","an","the","and","but","if","or","because","as","until","while","of","at","by","for","with","about","against","between","into","through","during","before","after","above","below","to","from","up","down","in","out","on","off","over","under","again","further","then","once","here","there","when","where","why","how","all","any","both","each","few","more","most","other","some","such","no","nor","not","only","own","same","so","than","too","can","will","just","don","should", "i'm", "know","don't","it's"]
 
     # Need to go through all the songs and word by word to word. The input is the slicer value which is the word index
-    cursor.execute("SELECT * from songs_data")
+    cursor.execute("SELECT * from Song_Table")
 
     # Adds the songs lyrics into an array
     results = []

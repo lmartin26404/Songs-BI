@@ -1,7 +1,17 @@
 Create database if not exists songDatabase;
 Use songDatabase;
 
+-- drop table Album_Table;
+-- drop table Song_Table;
 
+Create Table if not exists Album_Table
+(
+	album_id int NOT NULL Primary key,
+    album_name varchar(255),
+    album_release varchar(255),
+    album_artist varchar(255),
+    album_cover varchar(255)
+);
 
 Create Table if not exists Song_Table
 (
@@ -15,25 +25,18 @@ Create Table if not exists Song_Table
     song_clip varchar(255),
 	song_producer varchar(255),
     song_writer varchar(255),
+    song_lyrics text,
     song_views int, 
     
     FOREIGN KEY (album_id)
     REFERENCES Album_Table(album_id)
 );
 
-Create Table if not exists Album_Table
-(
-	album_id varchar(255) NOT NULL Primary key,
-    album_name varchar(255),
-    album_relase varchar(255),
-    album_artist varchar(255),
-    album_cover varchar(255)
-);
 
 
 
 select * from Song_Table;
-
+select * from Album_Table;
 
 Create Table if not exists songs_return
 (
