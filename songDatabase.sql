@@ -1,9 +1,7 @@
 Create database if not exists songDatabase;
 Use songDatabase;
 
--- drop table Album_Table;
--- drop table Song_Table;
-
+-- Data about Albums
 Create Table if not exists Album_Table
 (
 	album_id int NOT NULL Primary key,
@@ -13,6 +11,7 @@ Create Table if not exists Album_Table
     album_cover varchar(255)
 );
 
+-- Data about Songs
 Create Table if not exists Song_Table
 (
 	song_id int NOT NULL Primary key,
@@ -33,6 +32,15 @@ Create Table if not exists Song_Table
 );
 
 
+select song_artist, count(song_artist) 
+from Song_Table 
+group by song_artist 
+order by count(song_artist) desc;
+
+select * from song_table;
+
+
+select count(song_artist) from Song_Table;
 
 
 select * from Song_Table;
@@ -49,6 +57,10 @@ Create Table if not exists lookup_table
 (
 	artist varchar(255)
 );
+
+
+Select * from songs_return;
+select * from lookup_table;
 
 
 

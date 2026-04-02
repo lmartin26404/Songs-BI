@@ -7,6 +7,9 @@ require_once "DatabaseConnection.php";      // database connects
 // require_once "ServerFunctions.php";         // Downloads/parsing the data
 
 
+// Composer to store passwords
+
+
 function Data()
 {
     $object = $_POST['object'] ?? 'day';
@@ -22,7 +25,7 @@ function Data()
         global $keysArray, $valuesArray;
 
         // Makes the database connection
-        $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
+        $db = new DatabaseConnection();
         $conn = $db->connect();
 
         $sql = "delete from songs_return where key_col <> '' and value_col <> '' and artist <> '';";
@@ -58,8 +61,8 @@ function Data()
     {
         global $keysArray, $valuesArray, $artistArray, $totalString;
 
-                // Makes the database connection
-        $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
+        // Makes the database connection
+        $db = new DatabaseConnection();
         $conn = $db->connect();
 
 
@@ -114,8 +117,7 @@ function Data()
         group();
     }
 
-
-    $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
+    $db = new DatabaseConnection();
     $conn = $db->connect();
 
     //FindCurrentArtist($conn);
@@ -152,7 +154,8 @@ function RecieveData()
 {
      global $keysArray, $valuesArray;
      
-        $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
+
+    $db = new DatabaseConnection();
         $conn = $db->connect();
 
         // Gets the values that have been found. They are put into a SQL table.
@@ -195,7 +198,7 @@ function SearchboxArtistValues()
     {
         $search = $_POST['search'];
 
-        $db = new DatabaseConnection("localhost", "root", "Password@MySQL", "songDatabase");
+        $db = new DatabaseConnection();
         $conn = $db->connect();
 
         // Gets the value out of a search bar to then look for them in the database. It uses the SQL keyword like to find it.

@@ -5,13 +5,23 @@ import sys
 import pandas as pd
 import mysql.connector
 import re
+import os
+from dotenv import load_dotenv
 
 # Gets the object that is selected by the user in a dropdown menu.
 option = sys.argv[1]
 
 # MySQL connections
-connection = mysql.connector.connect(user='root',password='Password@MySQL',host = 'localhost', database = 'songDatabase', ssl_disabled=True)
+# Database connections
+load_dotenv("/Users/luke/Documents/Websites/SingingAbout/privateInfo.env")
 
+# Database connections
+db_username = os.getenv("DB_USERNAME")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+
+connection = mysql.connector.connect(user=db_username,password=db_password,host = db_host, database = db_name, ssl_disabled=True)
 cursor = connection.cursor()
 
 # The graphs

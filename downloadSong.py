@@ -1,9 +1,10 @@
-
 import requests
 import json
 from bs4 import BeautifulSoup
 import time
 import mysql.connector
+import os
+from dotenv import load_dotenv
 
 # Overall, flow of this program.
 # Search -> artist id -> songs to get songs id -> lyrics web
@@ -18,20 +19,27 @@ import mysql.connector
 #   2) Remove [Verse] [Chourus] [Outro]. Just igorne all [] Things like that just igore everything before and after them.
 #   3) Get the data that we want to and put that in the data base. Make sure to have a sleep.
 
+
+# Where the private information is stored
+load_dotenv("/Users/luke/Documents/Websites/SingingAbout/privateInfo.env")
+
 # Database connections
-connection = mysql.connector.connect(user='root',password='Password@MySQL',host = 'localhost', database = 'songDatabase')
+db_username = os.getenv("DB_USERNAME")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+
+connection = mysql.connector.connect(user=db_username,password=db_password,host = db_host, database = db_name, ssl_disabled=True)
 
 cursor = connection.cursor()
 
 # Genius API data
-client_access_token  = 'wbairHAoyw6vkQksrO7YPTDZ95skv7s6l0arodw9e0IUbqRaajYRx4KLmPcix9Uc'
+client_access_token  = os.getenv("Genius_API")
 headers = {"Authorization": f"Bearer {client_access_token}"}
-
-
 
 # Change these values
 # Total songs = songs_per_page * max_pages
-band_array = ["Prince","KISS","Nivana","The Bangles","Miley Cyrus","Neil Young","The Moody Blues","The Strokes","Lorde","Radiohead","Michael Jackson","REO Speedwagon","Blondie"]
+band_array = ["Queen","KISS","Nivana","The Bangles","Miley Cyrus","Neil Young","The Moody Blues","The Strokes","Lorde","Radiohead","Michael Jackson","REO Speedwagon","Blondie"]
 
 # 200 songs per artist
 songs_per_page = 25
@@ -40,7 +48,6 @@ max_pages = 8
 song_id_array = []
 
 artist_id = 0
-
 
 def get_Genius_Data(songs_per_page, max_pages): 
 
@@ -67,7 +74,6 @@ def get_Genius_Data(songs_per_page, max_pages):
       new_band = False
     
     # Gets all the song ids for an artist
-
 
     page_counter = 1
 
@@ -176,13 +182,8 @@ def get_Genius_Data(songs_per_page, max_pages):
       time.sleep(5) # Number of seconds to sleep
       sleep_counter = 0
 
-  
-
   # Closes the connection
   cursor.close()
-
-
-
 
 get_Genius_Data(songs_per_page, max_pages)
 
