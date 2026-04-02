@@ -22,6 +22,9 @@ package.json
 *.DS_Store
 *.json
 *.lock
+*.txt
+*.pyc
+
 
 
 
